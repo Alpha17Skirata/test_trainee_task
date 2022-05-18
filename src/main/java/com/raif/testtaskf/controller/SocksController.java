@@ -4,7 +4,6 @@ package com.raif.testtaskf.controller;
 import com.raif.testtaskf.entity.Socks;
 import com.raif.testtaskf.exception_handling.NoSuchSocks;
 import com.raif.testtaskf.exception_handling.UnrecognizedOperation;
-import com.raif.testtaskf.projectresources.ComparisonOperation;
 import com.raif.testtaskf.projectresources.Messanger;
 import com.raif.testtaskf.service.SocksService;
 import com.raif.testtaskf.service.ValidationService;
@@ -68,21 +67,22 @@ public class SocksController {
                                                 @RequestParam(name = "operation") String operation,
                                                 @RequestParam(name = "cottonPart") int cottonPart) {
         validationService.doesColorExist(color);
-        if (operation.equals(ComparisonOperation.moreThan.toString())) {
-            Integer sumOfSocks=socksService.getSumOfSocksWithCottonPartGreater(cottonPart,color);
-            validationService.doSocksExist(sumOfSocks);
-            return new ResponseEntity<>(sumOfSocks,HttpStatus.OK);
+        Integer sumOfSocks;
+        switch(operation){
+            case "moreThan":
+                sumOfSocks=socksService.getSumOfSocksWithCottonPartGreater(cottonPart,color);
+                validationService.doSocksExist(sumOfSocks);
+                return new ResponseEntity<>(sumOfSocks,HttpStatus.OK);
+            case "lessThan":
+                sumOfSocks=socksService.getSumOfSocksWithCottonPartLess(cottonPart,color);
+                validationService.doSocksExist(sumOfSocks);
+                return new ResponseEntity<>(sumOfSocks,HttpStatus.OK);
+            case "equals":
+                Socks socks=socksService.getSocks(cottonPart,color);
+                validationService.doSocksExist(socks);
+                return new ResponseEntity<>(socks.getQuantity(),HttpStatus.OK);
+            default:
+                throw new UnrecognizedOperation("Your operation isn`t recognized.");
         }
-        else if (operation.equals(ComparisonOperation.lessThan.toString())) {
-            Integer sumOfSocks=socksService.getSumOfSocksWithCottonPartLess(cottonPart,color);
-            validationService.doSocksExist(sumOfSocks);
-            return new ResponseEntity<>(sumOfSocks,HttpStatus.OK);
-        }
-        else if(operation.equals(ComparisonOperation.equals.toString())) {
-            Socks socks=socksService.getSocks(cottonPart,color);
-            validationService.doSocksExist(socks);
-            return new ResponseEntity<>(socks.getQuantity(),HttpStatus.OK);
-        }
-        else throw new UnrecognizedOperation("Your operation isn`t recognized.");
     }
 }
