@@ -24,7 +24,6 @@ public class SocksController {
     private ValidationService validationService;
 
     @PostMapping(path = "/socks/income")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Messanger> socksIncome(@RequestBody @Valid Socks receivedSocks){
         validationService.doesColorExist(receivedSocks.getColor());
         Socks socks=socksService.getSocks(receivedSocks.getCottonPart(), receivedSocks.getColor());
